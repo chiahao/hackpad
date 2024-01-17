@@ -94,9 +94,9 @@ object timekeeper {
     synchronized {
       if (t <= timestamp) {
 	timestamp += 1
-      } else {
+	} else {
 	timestamp = t
-      }
+	}
       timestamp
     }
   }
@@ -107,7 +107,7 @@ object timekeeper {
 }
 
 trait LoggingHandler extends org.mortbay.jetty.handler.AbstractHandler {
-  abstract override def handle(target: String, req: javax.servlet.http.HttpServletRequest, res: javax.servlet.http.HttpServletResponse, dispatch: Int) {
+  abstract override def handle(target: String, req: javax.servlet.http.HttpServletRequest, res: javax.servlet.http.HttpServletResponse, dispatch: Int) = {
     println("all ("+isStarted+") handling: "+(this match {
       case hc: org.mortbay.jetty.handler.HandlerCollection => hc.getHandlers.mkString(", ");
       case ahc: org.mortbay.jetty.handler.AbstractHandlerContainer => ahc.getChildHandlers.mkString(", ");
@@ -115,7 +115,7 @@ trait LoggingHandler extends org.mortbay.jetty.handler.AbstractHandler {
     }));
     super.handle(target, req, res, dispatch);
   }
-  override def doStart() {
+  override def doStart() = {
     println("all started.");
     //	Thread.dumpStack();
     try {
@@ -124,12 +124,12 @@ trait LoggingHandler extends org.mortbay.jetty.handler.AbstractHandler {
       case e: Exception => {
 	e.printStackTrace();
 	throw e;
-      }
+	}
     } finally {
       println("and: "+isStarted);
     }
   }
-  override def doStop() {
+  override def doStop() = {
     println("all stopped.");
     //	Thread.dumpStack();
     super.doStop();

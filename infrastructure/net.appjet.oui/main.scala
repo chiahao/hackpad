@@ -46,7 +46,7 @@ object main {
   val startTime = new java.util.Date();
 
   var lastTimeThreadPoolGrew = new java.util.Date();
-  def maybeGrowThreadPool() {
+  def maybeGrowThreadPool() = {
     if (queuedThreadPool.getIdleThreads() == 0 && queuedThreadPool.getMaxThreads() < config.maxThreads) {
       val now = new java.util.Date();
       if (now.getTime() - lastTimeThreadPoolGrew.getTime() > config.maxThreadsIncrementDelay) {
@@ -56,11 +56,11 @@ object main {
     }
   }
 
-  def quit(status: Int) {
+  def quit(status: Int) = {
     java.lang.Runtime.getRuntime().halt(status);
   }
 
-  def setupFilesystem() {
+  def setupFilesystem() = {
     val logdir = new File(config.logDir+"/backend/access");
     if (! logdir.isDirectory())
       if (! logdir.mkdirs())
@@ -73,14 +73,14 @@ object main {
       new CliOption(m.getName(), cp.value(), if (cp.argName().length > 0) Some(cp.argName()) else None);
     }
 
-  def printUsage() {
+  def printUsage() = {
     println("\n--------------------------------------------------------------------------------");
     println("usage:");
     println((new CliParser(options)).usage);
     println("--------------------------------------------------------------------------------\n");
   }
 
-  def extractOptions(args: Array[String]) {
+  def extractOptions(args: Array[String]) = {
     val parser = new CliParser(options);
     val opts =
       try {
@@ -103,14 +103,14 @@ object main {
     }
   }
 
-  def extractOptions(props: Properties) {
+  def extractOptions(props: Properties) = {
     for (k <- for (o <- JavaConversions.enumerationAsScalaIterator(props.propertyNames())) yield o.asInstanceOf[String]) {
       config.values(k) = props.getProperty(k);
     }
   }
 
   lazy val startupExecutable = (new FixedDiskLibrary(new SpecialJarOrNotFile(config.ajstdlibHome, "onstartup.js"))).executable;
-  def runOnStartup() {
+  def runOnStartup() = {
     execution.runOutOfBand(startupExecutable, "Startup", None, { error =>
       error match {
         case e: JSCompileException => { }
@@ -123,7 +123,7 @@ object main {
   }
 
   lazy val shutdownExecutable = (new FixedDiskLibrary(new SpecialJarOrNotFile(config.ajstdlibHome, "onshutdown.js"))).executable;
-  def runOnShutdown() {
+  def runOnShutdown() = {
     execution.runOutOfBand(shutdownExecutable, "Shutdown", None, { error =>
       error match {
         case e: JSCompileException => { }
@@ -146,7 +146,7 @@ object main {
     ec.attributes.get("sarsResponse").map(_.toString());
   }
 
-  def stfu() {
+  def stfu() = {
     System.setProperty("org.mortbay.log.class", "net.appjet.oui.STFULogger");
     System.setProperty("com.mchange.v2.log.MLog", "com.mchange.v2.log.FallbackMLog");
     System.setProperty("com.mchange.v2.log.FallbackMLog.DEFAULT_CUTOFF_LEVEL", "OFF");
@@ -156,7 +156,7 @@ object main {
   var queuedThreadPool: QueuedThreadPool = null;
 
   var loggers = new HashSet[GenericLogger];
-  def main(args: Array[String]) {
+  def main(args: Array[String]) = {
     val etherpadProperties = getClass.getResource("/etherpad.properties");
     if (etherpadProperties != null) {
       val p = new Properties();
@@ -257,7 +257,7 @@ object main {
     // set up apache-style logging
     val requestLogHandler = new RequestLogHandler();
     val requestLog = new NCSARequestLog(config.logDir+"/backend/access/access-yyyy_mm_dd.request.log") {
-      override def log(req: Request, res: Response) {
+      override def log(req: Request, res: Response) = {
         try {
           if (config.devMode || config.specialDebug)
             super.log(req, res);
@@ -325,9 +325,9 @@ object main {
 
     // start server
     java.lang.Runtime.getRuntime().addShutdownHook(new Thread() {
-      override def run() {
+      override def run() = {
   val df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSZ");
-  def printts(str: String) {
+  def printts(str: String) = {
     println("["+df.format(new Date())+"]: "+str);
   }
         printts("Shutting down...");
@@ -344,7 +344,7 @@ object main {
       }
     });
 
-    def socketError(c: org.mortbay.jetty.Connector, e: java.net.SocketException) {
+    def socketError(c: org.mortbay.jetty.Connector, e: java.net.SocketException) = {
       var msg = e.getMessage();
       println("SOCKET ERROR: "+msg+" - "+(c match {
         case null => "(unknown socket)";

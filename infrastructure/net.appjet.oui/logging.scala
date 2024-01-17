@@ -132,7 +132,7 @@ object GenericLoggerUtils {
   lazy val df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSZ");
   def dateString(date: Date) = df.format(date);
   var extraPropertiesFunction: Option[() => Map[String, String]] = None;
-  def setExtraPropertiesFunction(f: () => Map[String, String]) {
+  def setExtraPropertiesFunction(f: () => Map[String, String]) = {
     extraPropertiesFunction = Some(() => {
       try {
         f();
@@ -154,10 +154,10 @@ object GenericLoggerUtils {
   
   val registeredWranglers = 
     new ConcurrentHashMap[String, scala.collection.mutable.Set[WeakReference[LogWrangler]]];
-  def registerWrangler(name: String, wrangler: LogWrangler) {
+  def registerWrangler(name: String, wrangler: LogWrangler) = {
     wranglers(name) += wrangler.ref;
   }
-  def clearWrangler(name: String, wrangler: LogWrangler) {
+  def clearWrangler(name: String, wrangler: LogWrangler) = {
     wranglers(name) -= wrangler.ref;
   }
   def wranglers(name: String) = {
@@ -175,7 +175,7 @@ object GenericLoggerUtils {
       registeredWranglers.get(name);
     }
   }
-  def tellWranglers(name: String, lpb: LoggablePropertyBag) {
+  def tellWranglers(name: String, lpb: LoggablePropertyBag) = {
     for (w <- wranglers(name)) {
       w.get.foreach(_.tell(lpb));
       if (w.get.isEmpty) {
@@ -199,15 +199,15 @@ class GenericLogger(path: String, logName: String, rotateDaily: Boolean) {
   var currentLogDay:Date = null;
   var logWriter: FileWriter = null;
   var logBase = config.logDir;
-  def setLogBase(p: String) { logBase = p }
+  def setLogBase(p: String) = { logBase = p }
 
   var echoToStdOut = false;
-  def setEchoToStdOut(e: Boolean) {
+  def setEchoToStdOut(e: Boolean) = {
     echoToStdOut = e;
   }
   def stdOutPrefix = logName+": "
 
-  def initLogWriter(logDay: Date) {
+  def initLogWriter(logDay: Date) = {
     currentLogDay = logDay;
     
     // if rotating, log filename is logBase/[path/]logName/logName-<date>.jslog
@@ -229,7 +229,7 @@ class GenericLogger(path: String, logName: String, rotateDaily: Boolean) {
     logWriter = new FileWriter(f, true);
   }
 
-  def rotateIfNecessary(messageDate: Date) {
+  def rotateIfNecessary(messageDate: Date) = {
     if (rotateDaily) {
       if (!((messageDate.getYear == currentLogDay.getYear) &&
             (messageDate.getMonth == currentLogDay.getMonth) &&
@@ -241,10 +241,10 @@ class GenericLogger(path: String, logName: String, rotateDaily: Boolean) {
     }
   }
 
-  def flush() {
+  def flush() = {
     flush(java.lang.Integer.MAX_VALUE);
   }
-  def close() {
+  def close() = {
     logWriter.close();
   }
     
@@ -264,12 +264,12 @@ class GenericLogger(path: String, logName: String, rotateDaily: Boolean) {
     count;
   }
 
-  def start() {
+  def start() = {
     initLogWriter(new Date());
 
     loggerThread = new Thread("GenericLogger "+logName) {
       this.setDaemon(true);
-      override def run() {
+      override def run() = {
         while (true) {
           if (queue.isEmpty()) {
             Thread.sleep(500);
@@ -283,36 +283,36 @@ class GenericLogger(path: String, logName: String, rotateDaily: Boolean) {
     loggerThread.start();
   }
 
-  def log(lpb: LoggablePropertyBag) {
+  def log(lpb: LoggablePropertyBag) = {
     if (loggerThread != null) {
       queue.offer(lpb);
       GenericLoggerUtils.tellWranglers(logName, lpb);
     }
   }
-  def logObject(scr: Scriptable) {
+  def logObject(scr: Scriptable) = {
     log(new LoggableFromScriptable(
       scr, GenericLoggerUtils.getExtraProperties));
   }
-  def log[T](m: scala.collection.Map[String, T]) {
+  def log[T](m: scala.collection.Map[String, T]) = {
     log(new LoggableFromMap(
       m, GenericLoggerUtils.getExtraProperties));
   }
-  def log(s: String) {
+  def log(s: String) = {
     log(Map("message" -> s));
   }
-  def apply(s: String) {
+  def apply(s: String) = {
     log(s);
   }
-  def apply(scr: Scriptable) {
+  def apply(scr: Scriptable) = {
     logObject(scr);
   }
-  def apply[T](m: scala.collection.Map[String, T]) {
+  def apply[T](m: scala.collection.Map[String, T]) = {
     log(m);
   }
 }
 
 object profiler extends GenericLogger("backend", "profile", false) {
-  def apply(id: String, op: String, method: String, path: String, countAndNanos: (Long, Long)) {
+  def apply(id: String, op: String, method: String, path: String, countAndNanos: (Long, Long)) = {
     if (loggerThread != null)
       log(id+":"+op+":"+method+":"+path+":"+
           math.round(countAndNanos._2/1000)+
@@ -338,16 +338,16 @@ object profiler extends GenericLogger("backend", "profile", false) {
     id.remove();
   }
 
-  def record(key: String, time: Long) {
+  def record(key: String, time: Long) = {
     map.get()(key) = (1L, time);
   }
-  def recordCumulative(key: String, time: Long) {
+  def recordCumulative(key: String, time: Long) = {
     map.get()(key) = map.get().getOrElse(key, (0L, 0L)) match {
       case (count: Long, time0: Long) => (count+1, time0+time);
       case _ => { } // do nothing, but maybe shoud error.
     }
   }
-  def print() {
+  def print() = {
     for ((k, t) <- map.get()) {
       profiler(""+id.get(), k, "/", "/", t match {
         case (count: Long, time0: Long) => (count, time0);
@@ -374,7 +374,7 @@ object streaminglog extends GenericLogger("backend", "streaming-events", true) {
 }
 
 object exceptionlog extends GenericLogger("backend", "exceptions", true) {
-  def apply(e: Throwable) {
+  def apply(e: Throwable) = {
     val s = new StringWriter;
     e.printStackTrace(new PrintWriter(s));
     log(Map(
@@ -393,14 +393,14 @@ object exceptionlog extends GenericLogger("backend", "exceptions", true) {
 // }
 
 class STFULogger extends org.mortbay.log.Logger {
-  def debug(m: String, a0: Object, a1: Object) { }
-  def debug(m: String, t: Throwable) { }
+  def debug(m: String, a0: Object, a1: Object) = { }
+  def debug(m: String, t: Throwable) = { }
   def getLogger(m: String) = { this }
-  def info(m: String, a0: Object, a2: Object) { }
+  def info(m: String, a0: Object, a2: Object) = { }
   def isDebugEnabled() = { false }
-  def setDebugEnabled(t: Boolean) { }
-  def warn(m: String, a0: Object, a1: Object) { }
-  def warn(m: String, t: Throwable) { }
+  def setDebugEnabled(t: Boolean) = { }
+  def warn(m: String, a0: Object, a1: Object) = { }
+  def warn(m: String, t: Throwable) = { }
 }
 
 case class Percentile(count: Int, p50: Int, p90: Int, p95: Int, p99: Int, max: Int);
@@ -412,10 +412,10 @@ object cometlatencies {
   var loggerThread: Thread = null;
   var lastCount: Option[Map[String, Int]] = None;
   var lastStats: Option[Percentile] = None;
-  def start() {
+  def start() = {
     loggerThread = new Thread("latencies logger") {
       this.setDaemon(true);
-      override def run() {
+      override def run() = {
         while(true) {
           Thread.sleep(60*1000); // every minute
           try {
@@ -470,11 +470,11 @@ object executionlatencies extends GenericLogger("backend", "latency", true) {
 }
 
 abstract class LogWrangler {
-  def tell(lpb: LoggablePropertyBag);
-  def tell(json: String) { tell(new LoggableFromJson(json)); }
+  def tell(lpb: LoggablePropertyBag): Unit;
+  def tell(json: String) = { tell(new LoggableFromJson(json)); }
   lazy val ref = new WeakReference(this);
 
-  def watch(logName: String) {
+  def watch(logName: String) = {
     GenericLoggerUtils.registerWrangler(logName, this);
   }
 }
@@ -484,7 +484,7 @@ class FilterWrangler(
     `type`: String,
     filter: LoggablePropertyBag => Boolean,
     field: String) extends LogWrangler {
-  def tell(lpb: LoggablePropertyBag) {
+  def tell(lpb: LoggablePropertyBag) = {
     if ((`type` == null || lpb.`type` == `type`) &&
         (filter == null || filter(lpb))) {
       val entry = lpb.value(field);

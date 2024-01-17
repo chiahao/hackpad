@@ -175,12 +175,12 @@ class ResponseWrapper(val res: HttpServletResponse) {
   private var contentType = "text/html;";
   private var redirect: String = null;
   private lazy val headers = new LinkedHashSet[(String, String, HttpServletResponse => Unit)] {
-    def removeAll(k: String) {
+    def removeAll(k: String) = {
       this.foreach(x => if (x._1 == k) remove(x));
     }
   }
 
-  private[oui] def overwriteOutputWithError(code: Int, errorStr: String) {
+  private[oui] def overwriteOutputWithError(code: Int, errorStr: String) = {
     statusCode = code;
     outputStrings.clear();
     outputStrings += errorStr;
@@ -191,7 +191,7 @@ class ResponseWrapper(val res: HttpServletResponse) {
     contentType = "text/html; charset=utf-8";
   }
 
-  def reset() {
+  def reset() = {
     outputStrings.clear();
     outputBytes.clear();
     redirect = null;
@@ -200,62 +200,62 @@ class ResponseWrapper(val res: HttpServletResponse) {
     statusCode = 200;
     contentType = "text/html; charset=utf-8";
   }
-  def error(code: Int, errorStr: String) {
+  def error(code: Int, errorStr: String) = {
     overwriteOutputWithError(code, errorStr);
     stop();
   }
-  def stop() {
+  def stop() = {
     throw AppGeneratedStopException;
   }
 
-  def write(s: String) {
+  def write(s: String) = {
     outputStrings += s;
   }
   def getOutput() = outputStrings.mkString("");
-  def writeBytes(bytes: String) {
+  def writeBytes(bytes: String) = {
     val a = new Array[Byte](bytes.length());
     bytes.getBytes(0, bytes.length(), a, 0);
     outputBytes += a;
   }
-  def writeBytes(bytes: Array[Byte]) {
+  def writeBytes(bytes: Array[Byte]) = {
     outputBytes += bytes;
   }
   def getOutputBytes() = outputBytes.flatMap(x => x).toArray
-  def setContentType(s: String) {
+  def setContentType(s: String) = {
     contentType = s;
   }
   def getCharacterEncoding() = {
     res.setContentType(contentType);
     res.getCharacterEncoding();
   }
-  def setStatusCode(sc: Int) {
+  def setStatusCode(sc: Int) = {
     statusCode = sc;
   }
   def getStatusCode() = statusCode;
-  def redirect(loc: String) {
+  def redirect(loc: String) = {
     statusCode = 302;
     redirect = loc;
     stop();
   }
-  def setHeader(name: String, value: String) {
+  def setHeader(name: String, value: String) = {
     headers += ((name, value, res => res.setHeader(name, value)));
   }
-  def addHeader(name: String, value: String) {
+  def addHeader(name: String, value: String) = {
     headers += ((name, value, res => res.addHeader(name, value)));
   }
   def getHeader(name: String) = {
     headers.filter(_._1 == name).toArray.map(_._2);
   }
-  def removeHeader(name: String) {
+  def removeHeader(name: String) = {
     headers.removeAll(name);
   }
 
   var gzipOutput = false;
-  def setGzip(gzip: Boolean) {
+  def setGzip(gzip: Boolean) = {
     gzipOutput = gzip;
   }
 
-  def print() {
+  def print() = {
     if (redirect != null && statusCode == 302) {
       headers.foreach(_._3(res));
       res.sendRedirect(redirect);
@@ -281,8 +281,8 @@ class ResponseWrapper(val res: HttpServletResponse) {
 
 class ScriptableAdapter extends Scriptable {
   private def unsupported() = throw UnsupportedOperationException;
-  def delete(index: Int) { unsupported(); }
-  def delete(name: String) { unsupported(); }
+  def delete(index: Int) = { unsupported(); }
+  def delete(name: String) = { unsupported(); }
   def get(index: Int, start: Scriptable): Object = Context.getUndefinedValue();
   def get(name: String, start: Scriptable): Object = Context.getUndefinedValue();
   def getClassName() = getClass.getName();
@@ -293,10 +293,10 @@ class ScriptableAdapter extends Scriptable {
   def has(index: Int, start: Scriptable): Boolean = false;
   def has(name: String, start: Scriptable): Boolean = false;
   def hasInstance(instance: Scriptable): Boolean = false;
-  def put(index: Int, start: Scriptable, value: Object) { unsupported(); }
-  def put(name: String, start: Scriptable, value: Object) { unsupported(); }
-  def setParentScope(parent: Scriptable) { unsupported(); }
-  def setPrototype(prototype: Scriptable) { unsupported(); }
+  def put(index: Int, start: Scriptable, value: Object) = { unsupported(); }
+  def put(name: String, start: Scriptable, value: Object) = { unsupported(); }
+  def setParentScope(parent: Scriptable) = { unsupported(); }
+  def setPrototype(prototype: Scriptable) = { unsupported(); }
 }
 
 class ScriptableFromMapOfStringArrays(globalScope: Scriptable,
@@ -362,35 +362,35 @@ object CometSupport {
 }
 
 class OuiServlet extends HttpServlet {
-  override def doGet(req: HttpServletRequest, res: HttpServletResponse) {
+  override def doGet(req: HttpServletRequest, res: HttpServletResponse) = {
     execute(req, res);
   }
 
-  override def doPost(req: HttpServletRequest, res: HttpServletResponse) {
+  override def doPost(req: HttpServletRequest, res: HttpServletResponse) = {
     execute(req, res);
   }
 
-  override def doHead(req: HttpServletRequest, res: HttpServletResponse) {
+  override def doHead(req: HttpServletRequest, res: HttpServletResponse) = {
     execute(req, res);
   }
 
-  override def doPut(req: HttpServletRequest, res: HttpServletResponse) {
+  override def doPut(req: HttpServletRequest, res: HttpServletResponse) = {
     execute(req, res);
   }
 
-  override def doDelete(req: HttpServletRequest, res: HttpServletResponse) {
+  override def doDelete(req: HttpServletRequest, res: HttpServletResponse) = {
     execute(req, res);
   }
 
-  override def doTrace(req: HttpServletRequest, res: HttpServletResponse) {
+  override def doTrace(req: HttpServletRequest, res: HttpServletResponse) = {
     execute(req, res);
   }
 
-  override def doOptions(req: HttpServletRequest, res: HttpServletResponse) {
+  override def doOptions(req: HttpServletRequest, res: HttpServletResponse) = {
     execute(req, res);
   }
 
-  def execute(req: HttpServletRequest, res: HttpServletResponse) {
+  def execute(req: HttpServletRequest, res: HttpServletResponse) = {
     // adjust the thread pool as needed
     main.maybeGrowThreadPool();
 
@@ -448,7 +448,7 @@ object execution {
   def sarsExecutable = sarsLib.executable;
   def scheduledTaskExecutable = scheduledTaskLib.executable;
 
-  def postSuccessfulRun(ec: ExecutionContext) {
+  def postSuccessfulRun(ec: ExecutionContext) = {
     try {
       for (f <- ec.asyncs) {
         BodyLock.runInContext({ cx =>
@@ -460,7 +460,7 @@ object execution {
     }
   }
 
-  def onprint(ec: ExecutionContext, scope: Scriptable) {
+  def onprint(ec: ExecutionContext, scope: Scriptable) = {
     try {
 //      ec.runner.globalScope.put("_appjetcontext_", ec.runner.globalScope, ec);
       printExecutable.execute(scope);
@@ -469,7 +469,7 @@ object execution {
     }
   }
 
-  def execute(req: HttpServletRequest, res: HttpServletResponse) {
+  def execute(req: HttpServletRequest, res: HttpServletResponse) = {
     val runner = try {
       ScopeReuseManager.getRunner;
     } catch {
@@ -551,7 +551,7 @@ object execution {
       doneWritingHandler();
       if (ec.completed && ! ec.asyncs.isEmpty) {
         main.server.getThreadPool().dispatch(new Runnable {
-          def run() {
+          def run() = {
             postSuccessfulRun(ec);
             completedHandler();
           }

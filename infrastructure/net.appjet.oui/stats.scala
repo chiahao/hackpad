@@ -67,7 +67,7 @@ abstract class BucketKeeper[A: ClassManifest, B: ClassManifest](val size: Long, 
     }
   }
 
-  protected def bucketClear(index: Int);
+  protected def bucketClear(index: Int): Unit;
   protected def bucketsInOrder: Seq[A] =
     buckets.slice((currentBucket+1)%numbuckets, numbuckets) ++
     buckets.slice(0, currentBucket)

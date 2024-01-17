@@ -43,7 +43,7 @@ object FastJSONStringify {
     return stringer.toString();
   }
 
-  private def stringerize(s: JSONStringer, v: Object) {
+  private def stringerize(s: JSONStringer, v: Object) = {
     if (v == Context.getUndefinedValue) {
       return;
     }
@@ -62,7 +62,7 @@ object FastJSONStringify {
     }
   }
 
-  private def stringerizeScriptable(stringer: JSONStringer, rhinoObj: Scriptable) {
+  private def stringerizeScriptable(stringer: JSONStringer, rhinoObj: Scriptable) = {
     if (rhinoObj.getClassName() == "Date") {
       stringerizeDate(stringer, rhinoObj);
     } else if (rhinoObj.getClassName() == "Array") {
@@ -72,7 +72,7 @@ object FastJSONStringify {
     }
   }
 
-  private def stringerizeObj(stringer: JSONStringer, rhinoObj: Scriptable) {
+  private def stringerizeObj(stringer: JSONStringer, rhinoObj: Scriptable) = {
     stringer.`object`();
 
     for (id <- rhinoObj.getIds()) {
@@ -93,14 +93,14 @@ object FastJSONStringify {
     stringer.endObject();
   }
 
-  private def stringerizeDate(stringer: JSONStringer, rhinoObj: Scriptable) {
+  private def stringerizeDate(stringer: JSONStringer, rhinoObj: Scriptable) = {
     val v:Object = ScriptableObject.callMethod(rhinoObj, "toJSON", Array());
     if (v != null && v != Scriptable.NOT_FOUND && v != Context.getUndefinedValue) {
       stringerize(stringer, v);
     }
   }
 
-  private def stringerizeArray(stringer: JSONStringer, rhinoArray: Scriptable) {
+  private def stringerizeArray(stringer: JSONStringer, rhinoArray: Scriptable) = {
     stringer.`array`();
 
     val ids:Array[Object] = rhinoArray.getIds();

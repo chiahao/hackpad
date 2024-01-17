@@ -247,7 +247,7 @@ abstract class AutoUpdateFile(val fname: String) extends Subscriber[Message[Unit
   //   }
   // }
   
-  def notify(pub: JarOrNotFile, event: Message[Unit]) {
+  def notify(pub: JarOrNotFile, event: Message[Unit]) = {
     event match {
       case Reset => cachedContents = None;
     }
