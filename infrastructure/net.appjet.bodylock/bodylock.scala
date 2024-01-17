@@ -18,7 +18,9 @@ package net.appjet.bodylock;
 
 import net.appjet.common.rhino.rhinospect;
 
-import scala.collection.mutable.{SynchronizedMap, ArrayBuffer, HashMap};
+
+import scala.collection.concurrent.{Map, TrieMap};
+import scala.collection.mutable.ArrayBuffer;
 
 import org.mozilla.javascript.{Context, Scriptable, ScriptableObject, Script, JavaScriptException, NativeJavaObject, WrappedException, IdScriptableObject};
 
@@ -51,7 +53,8 @@ class JSRuntimeException(val message: String, val cause: Throwable) extends Exec
         }
       }
     }
-    ab;
+    ab.toSeq // Convert ArrayBuffer to Seq
+    
   }
   def frames = i_frames;
 }
@@ -103,7 +106,7 @@ object CustomContextFactory extends org.mozilla.javascript.ContextFactory {
 }
 
 object BodyLock {
-  var map: Option[SynchronizedMap[String, String]] = None;
+  var map: Option[TrieMap[String, String]] = None;
 
   def runInContext[E](expr: Context => E): E = {
     val cx = CustomContextFactory.enterContext();
@@ -234,11 +237,11 @@ object Compiler {
 //   }
 
   var verbose = true;
-  def vprintln(s: String) {
+  def vprintln(s: String) = {
     if (verbose) println(s);
   }
 
-  def printUsage() {
+  def printUsage() = {
     println((new CliParser(options)).usage);
   }
   def extractOptions(args0: Array[String]) = {
@@ -259,7 +262,7 @@ object Compiler {
     }
     args
   }
-  def compileSingleFile(src: File, dst: File) {
+  def compileSingleFile(src: File, dst: File) = {
     val source = BetterFile.getFileContents(src);
     vprintln("to: "+dst.getPath());
     val classBytes = compilationutils.compileToBytes(source, src.getName(), 1, dst.getName().split("\\.")(0));
@@ -268,7 +271,7 @@ object Compiler {
     fos.write(classBytes);
   }
 
-  def main(args0: Array[String]) {
+  def main(args0: Array[String]) = {
     // should contain paths, relative to PWD, of javascript files to compile.
     val args = extractOptions(args0);
     val dst = chosenOptions("destination");

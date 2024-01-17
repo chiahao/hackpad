@@ -23,20 +23,20 @@ object compressor {
   def compress(code: String): String = {
     import yuicompressor.org.mozilla.javascript.{ErrorReporter, EvaluatorException};
     object MyErrorReporter extends ErrorReporter {
-      def warning(message:String, sourceName:String, line:Int, lineSource:String, lineOffset:Int) {
+      def warning(message:String, sourceName:String, line:Int, lineSource:String, lineOffset:Int) = {
 	if (message startsWith "Try to use a single 'var' statement per scope.") return;
 	if (line < 0) System.err.println("\n[WARNING] " + message);
 	else System.err.println("\n[WARNING] " + line + ':' + lineOffset + ':' + message);
-      }
-      def error(message:String, sourceName:String, line:Int, lineSource:String, lineOffset:Int) {
+		}
+      def error(message:String, sourceName:String, line:Int, lineSource:String, lineOffset:Int) = {
 	if (line < 0) System.err.println("\n[ERROR] " + message);
 	else System.err.println("\n[ERROR] " + line + ':' + lineOffset + ':' + message);
 	java.lang.System.exit(1);
-      }
+		}
       def runtimeError(message:String, sourceName:String, line:Int, lineSource:String, lineOffset:Int): EvaluatorException = {
 	error(message, sourceName, line, lineSource, lineOffset);
 	return new EvaluatorException(message);
-      }
+	}
     }
 
     val munge = true;
@@ -49,7 +49,7 @@ object compressor {
     writer.toString;
   }
 
-  def main(args: Array[String]) {
+  def main(args: Array[String]) = {
     for (fname <- args) {
       try {
 	val src = BetterFile.getFileContents(fname);
@@ -57,13 +57,13 @@ object compressor {
 	val fw = (new java.io.FileWriter(new java.io.File(fname)));
 	fw.write(obfSrc, 0, obfSrc.length);
 	fw.close();
-      } catch {
+	} catch {
 	case e => {
 	  println("Failed to compress: "+fname+". Quitting.");
 	  e.printStackTrace();
 	  System.exit(1);
 	}
-      }
+	}
     }
   }
 }

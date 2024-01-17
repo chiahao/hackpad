@@ -22,7 +22,7 @@ import java.security.NoSuchAlgorithmException;
  
 object SimpleSHA1 {
   private val chars = Map(0 -> '0', 1 -> '1', 2 -> '2', 3 -> '3', 4 -> '4', 5 -> '5', 6 -> '6', 7 -> '7',
-			  8 -> '8', 9 -> '9', 10 -> 'a', 11 -> 'b', 12 -> 'c', 13 -> 'd', 14 -> 'e', 15 -> 'f');
+    8 -> '8', 9 -> '9', 10 -> 'a', 11 -> 'b', 12 -> 'c', 13 -> 'd', 14 -> 'e', 15 -> 'f');
   private def convertToHex(data: Array[Byte]): String = {
     val buf = new StringBuilder();
     for (b <- data) {

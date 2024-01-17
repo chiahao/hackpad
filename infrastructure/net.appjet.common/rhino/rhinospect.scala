@@ -20,14 +20,14 @@ import java.lang.reflect.Modifier;
 
 object rhinospect {
 
-  def visitFields(obj: Object, func: (String,Any)=>Unit) {
+  def visitFields(obj: Object, func: (String,Any)=>Unit) = {
     var cls: Class[_] = obj.getClass;
 
     if (cls.isArray) {
       import java.lang.reflect.Array;
       for(i <- 0 until Array.getLength(obj)) {
 	func(String.valueOf(i), Array.get(obj, i));
-      }
+		}
     }
     else {
       while (cls ne null) {
@@ -40,7 +40,7 @@ object rhinospect {
 	  }
 	}
 	cls = cls.getSuperclass;
-      }
+	}
     }
   }
 
@@ -51,7 +51,7 @@ object rhinospect {
       out.printf("%30s: %s\n", name+prefix, String.valueOf(value));
       if (depth > 0 && value.isInstanceOf[Object]) {
 	out.print(dumpFields(value.asInstanceOf[Object], depth-1, prefix+" --"));
-      }
+	}
     });
     s.toString();
   }

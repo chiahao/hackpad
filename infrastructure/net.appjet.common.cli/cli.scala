@@ -32,7 +32,7 @@ class CliParser(predef: Array[CliOption]) {
       val parts = arg.split("=", 2);
       val name = "-+".r.replaceFirstIn(parts(0), "");
       if (parts.length == 1 && options.get(name).map(_.argName.isDefined).exists(x => x))
-	throw new ParseException("Missing argument for flag: "+name);
+          throw new ParseException("Missing argument for flag: "+name);
       (name, parts.orElse(Map(1 -> "true"))(1));
     }): _*),
      args.toArray);

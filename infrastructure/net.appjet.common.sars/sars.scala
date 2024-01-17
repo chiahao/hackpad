@@ -68,12 +68,12 @@ private[sars] trait SarsMessageReaderWriter {
     val m = readMessage;
     m.filter(_.isInstanceOf[Array[Byte]]).asInstanceOf[Option[Array[Byte]]];
   }
-  def writeMessage(bytes: Array[Byte]) {
+  def writeMessage(bytes: Array[Byte]) = {
     outputStream.writeInt(byteArray);
     outputStream.writeInt(bytes.length);
     outputStream.write(bytes);
   }
-  def writeMessage(string: String) {
+  def writeMessage(string: String) = {
     outputStream.writeInt(utf8String);
     outputStream.writeUTF(string);
   }
@@ -88,7 +88,7 @@ class SarsClient(authKey: String, host: String, port: Int) {
     }
     var authenticated = false;
 
-    def auth() {
+    def auth() = {
       val challenge = readerWriter.readString;
       if (challenge.isEmpty) { 
         throw new ChannelClosedUnexpectedlyException;
@@ -107,8 +107,8 @@ class SarsClient(authKey: String, host: String, port: Int) {
         throw new NotAuthenticatedException;
       }
       try {
-        writer(q);
-        val res = reader();
+        //writer(q);
+        val res = reader(writer(q));
         if (res.isEmpty) {
           throw new ChannelClosedUnexpectedlyException;
         }
@@ -129,7 +129,7 @@ class SarsClient(authKey: String, host: String, port: Int) {
     def message(b: Array[Byte]): Array[Byte] = 
       message[Array[Byte]](b, readerWriter.writeMessage, Unit => readerWriter.readBytes);
 
-    def close() {
+    def close() = {
       if (! s.isClosed) {
         s.close();
       }
@@ -140,15 +140,15 @@ class SarsClient(authKey: String, host: String, port: Int) {
   var connectTimeout = 0;
   var readTimeout = 0;
   
-  def setConnectTimeout(timeout: Int) {
+  def setConnectTimeout(timeout: Int) = {
     connectTimeout = timeout;
   }
-  def setReadTimeout(timeout: Int) {
+  def setReadTimeout(timeout: Int) = {
     readTimeout = timeout;
   }
   
   var client: SarsClientHandler = null;
-  def connect() {
+  def connect() = {
     if (socket != null && ! socket.isClosed) {
       socket.close();
     }
@@ -173,7 +173,7 @@ class SarsClient(authKey: String, host: String, port: Int) {
     client.message(b);
   }
 
-  def close() {
+  def close() = {
     if (client != null) {
       client.close();
     }
@@ -187,7 +187,7 @@ class SarsServer(authKey: String, handler: SarsMessageHandler, host: Option[Stri
     var thread: Thread = null;
     var running = new AtomicBoolean(false);
     
-    def run() {
+    def run() = {
       try {
         thread = Thread.currentThread();
         if (running.compareAndSet(false, true)) {
@@ -225,7 +225,7 @@ class SarsServer(authKey: String, handler: SarsMessageHandler, host: Option[Stri
       }
     }
 
-    def stop() {
+    def stop() = {
       if (running.compareAndSet(true, false)) {
         thread.interrupt();
       }
@@ -243,13 +243,13 @@ class SarsServer(authKey: String, handler: SarsMessageHandler, host: Option[Stri
   var daemon = false;
   val server = this;
 
-  def start() {
+  def start() = {
     if (hasRun)
       throw new RuntimeException("Can't reuse server.");
     hasRun = true;
     if (running.compareAndSet(false, true)) {
       serverThread = new Thread() {
-        override def run() {
+        override def run() = {
           while(running.get()) {
             val cs = try {
               ss.accept();
@@ -289,7 +289,7 @@ class SarsServer(authKey: String, handler: SarsMessageHandler, host: Option[Stri
     }
   }
 
-  def stop() {
+  def stop() = {
     if (running.compareAndSet(true, false)) {
       if (! ss.isClosed) {
         ss.close();
@@ -304,13 +304,13 @@ class SarsServer(authKey: String, handler: SarsMessageHandler, host: Option[Stri
     }
   }
 
-  def join() {
+  def join() = {
     serverThread.join();
   }
 }
 
 object test {
-  def main(args: Array[String]) { 
+  def main(args: Array[String]) = { 
     val handler = new SarsMessageHandler {
       override def handle(s: String) = {
         println("SERVER: "+s);
