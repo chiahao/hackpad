@@ -29,8 +29,8 @@ import scala.collection.mutable.{Map, HashMap};
 import net.sf.json.{JSONObject, JSONArray};
 import org.mozilla.javascript.{Scriptable, Context};
 
-import scala.collection.JavaConversions;
-import scala.jdk.CollectionConverters._
+import scala.collection.JavaConverters._;
+import scala.collection.convert.ImplicitConversions._
 
 trait LoggablePropertyBag {
   def date: Date;
@@ -120,7 +120,7 @@ class LoggableFromMap[T](
 class LoggableFromJson(val json: String) extends LoggablePropertyBag {
   val obj = JSONObject.fromObject(json);
   val date = new Date(obj.getLong("date"));
-  val keys = obj.keys().map(String.valueOf(_)).toArray;
+  val keys = obj.keys().asScala.map(String.valueOf).toArray
   // FIXME: is now not sorted in any particular order.
   def value(k: String) = obj.get(k);
   val tabDelimited =
@@ -155,17 +155,16 @@ object GenericLoggerUtils {
   val registeredWranglers = 
     new ConcurrentHashMap[String, scala.collection.mutable.Set[WeakReference[LogWrangler]]];
   def registerWrangler(name: String, wrangler: LogWrangler) = {
-    wranglers(name) += wrangler.ref;
+    wranglers(name) = wranglers(name) + wrangler.ref;
   }
   def clearWrangler(name: String, wrangler: LogWrangler) = {
-    wranglers(name) -= wrangler.ref;
+    wranglers(name).removeIf(w => w.get == wrangler.ref);
   }
   def wranglers(name: String) = {
     if (! registeredWranglers.containsKey(name)) {
-      val set1 = JavaConversions.asScalaSet(
-        new CopyOnWriteArraySet[WeakReference[LogWrangler]]);
-      val set2 = registeredWranglers.putIfAbsent(
-        name, set1);
+      val set1 = new java.util.concurrent.CopyOnWriteArraySet[WeakReference[LogWrangler]];
+      val set2 = registeredWranglers.putIfAbsent(name, scala.collection.JavaConverters.asScalaSet(set1));
+      
       if (set2 == null) {
         set1
       } else {
@@ -176,10 +175,10 @@ object GenericLoggerUtils {
     }
   }
   def tellWranglers(name: String, lpb: LoggablePropertyBag) = {
-    for (w <- wranglers(name)) {
+    for (w <- wranglers(name).asScala) {
       w.get.foreach(_.tell(lpb));
       if (w.get.isEmpty) {
-        wranglers(name) -= w;
+        wranglers(name).remove(w);
       }
     }
   }
@@ -241,7 +240,7 @@ class GenericLogger(path: String, logName: String, rotateDaily: Boolean) {
     }
   }
 
-  def flush() = {
+  def flush(): Unit = {
     flush(java.lang.Integer.MAX_VALUE);
   }
   def close() = {
@@ -293,11 +292,11 @@ class GenericLogger(path: String, logName: String, rotateDaily: Boolean) {
     log(new LoggableFromScriptable(
       scr, GenericLoggerUtils.getExtraProperties));
   }
-  def log[T](m: scala.collection.Map[String, T]) = {
+  def log[T](m: scala.collection.Map[String, T]): Unit = {
     log(new LoggableFromMap(
       m, GenericLoggerUtils.getExtraProperties));
   }
-  def log(s: String) = {
+  def log(s: String): Unit = {
     log(Map("message" -> s));
   }
   def apply(s: String) = {
@@ -422,7 +421,7 @@ object cometlatencies {
             val oldLatencies = latencies;
             latencies = new java.util.concurrent.ConcurrentLinkedQueue[Int];
             // NOTE(pc): Could probably use 'iterableAsScalaIterable' instead here.
-            val latArray = collectionAsScalaIterable(oldLatencies).toArray;
+            val latArray = oldLatencies.asScala.toArray
             Sorting.quickSort(latArray);
             def pct(p: Int) =
               if (latArray.length > 0)
@@ -471,7 +470,7 @@ object executionlatencies extends GenericLogger("backend", "latency", true) {
 
 abstract class LogWrangler {
   def tell(lpb: LoggablePropertyBag): Unit;
-  def tell(json: String) = { tell(new LoggableFromJson(json)); }
+  def tell(json: String): Unit = { tell(new LoggableFromJson(json)); }
   lazy val ref = new WeakReference(this);
 
   def watch(logName: String) = {

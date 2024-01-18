@@ -68,13 +68,10 @@ function gencommon {
     javac \
 	-cp $CP \
 	-d $1 \
-	-target 1.5 \
-	-source 1.5 \
 	$COMMONFILES
     $CC \
 	-classpath $CP \
 	-d $1 \
-	-target:jvm-1.5 \
 	$ARGS \
 	$COMMONSCALAFILES
 }
@@ -86,7 +83,6 @@ function gensars {
     $CC \
 	-classpath $CP \
 	-d $1 \
-	-target:jvm-1.5 \
 	$ARGS \
 	$SARSFILES
 }
@@ -98,7 +94,6 @@ function gencli {
     $CC \
 	-classpath $CP \
 	-d $1 \
-	-target:jvm-1.5 \
 	$ARGS \
 	$CLIFILES
     echo "done with cli"
@@ -111,7 +106,6 @@ function genbodylock {
     $CC \
 	-classpath build:$CP \
 	-d $1 \
-	-target:jvm-1.5 \
 	$ARGS \
 	$BODYLOCKFILES
 }
@@ -124,13 +118,10 @@ function genappserver {
     javac \
 	-cp $CP \
 	-d $1 \
-	-target 1.5 \
-	-source 1.5 \
 	$APPSERVERJAVAFILES
     $CC \
 	-classpath $CP:$1 \
 	-d $1 \
-	-target:jvm-1.5 \
 	$ARGS \
 	$APPSERVERFILES
 }
@@ -145,14 +136,11 @@ function genajstdlib {
 	javac \
 	    -cp $CP \
 	    -d $1 \
-	    -target 1.5 \
-	    -source 1.5 \
 	    $AJSTDLIBJAVAFILES
     fi
     $CC \
 	-classpath $CP \
 	-d $1 \
-	-target:jvm-1.5 \
 	$ARGS \
 	$AJSTDLIBFILES
 }
@@ -166,14 +154,11 @@ function genetherpad {
 	javac \
 	    -cp $CP \
 	    -d $1 \
-	    -target 1.5 \
-	    -source 1.5 \
 	    $EPJAVAFILES
     fi
     $CC \
 	-classpath $CP \
 	-d $1 \
-	-target:jvm-1.5 \
 	$ARGS \
 	$EPFILES
 }
@@ -185,7 +170,6 @@ function genooservice {
     $CC \
 	-classpath $CP \
 	-d $1 \
-	-target:jvm-1.5 \
 	$ARGS \
 	$OOSERVICEFILES
 }

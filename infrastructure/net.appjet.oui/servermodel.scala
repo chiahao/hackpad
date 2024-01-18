@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import scala.collection.mutable.{HashSet, SynchronizedSet};
+import scala.collection.mutable.{HashSet};
 import java.util.concurrent.ConcurrentHashMap;
 
 import net.appjet.bodylock.{BodyLock, JSCompileException};
