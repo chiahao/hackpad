@@ -23,8 +23,9 @@ import java.util.{Properties, Date};
 import java.lang.annotation.Annotation;
 import java.text.SimpleDateFormat;
 
-import scala.collection.mutable.{HashMap, SynchronizedMap, HashSet};
-import scala.collection.JavaConversions;
+import scala.collection.mutable.{HashMap, HashSet};
+import java.util.concurrent.ConcurrentHashMap;
+import scala.collection.JavaConverters._;
 
 import org.mortbay.thread.QueuedThreadPool;
 import org.mortbay.jetty.servlet.{Context, HashSessionIdManager, FilterHolder, ServletHolder};
@@ -80,7 +81,7 @@ object main {
     println("--------------------------------------------------------------------------------\n");
   }
 
-  def extractOptions(args: Array[String]) = {
+  def extractOptions(args: Array[String]): Unit = {
     val parser = new CliParser(options);
     val opts =
       try {
@@ -177,7 +178,7 @@ object main {
 
     // this needs a better place.
     if (config.devMode)
-      BodyLock.map = Some(new HashMap[String, String] with SynchronizedMap[String, String]);
+      BodyLock.map = Some(new ConcurrentHashMap[String, String]());
 
     server = new Server();
     if (config.maxStartupThreads > 0)

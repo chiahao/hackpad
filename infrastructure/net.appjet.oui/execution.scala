@@ -186,7 +186,7 @@ class ResponseWrapper(val res: HttpServletResponse) {
     outputStrings += errorStr;
     outputBytes.clear();
     headers.clear();
-    Util.noCacheHeaders.foreach(x => headers += (x._1, x._2, res => res.setHeader(x._1, x._2)));
+    Util.noCacheHeaders.foreach(x => headers += ((x._1, x._2, (res: HttpServletResponse) => res.setHeader(x._1, x._2))));
     redirect = null;
     contentType = "text/html; charset=utf-8";
   }
@@ -196,7 +196,7 @@ class ResponseWrapper(val res: HttpServletResponse) {
     outputBytes.clear();
     redirect = null;
     headers.clear();
-    Util.noCacheHeaders.foreach(x => headers += (x._1, x._2, res => res.setHeader(x._1, x._2)));
+    Util.noCacheHeaders.foreach(x => headers += ((x._1, x._2, (res: HttpServletResponse) => res.setHeader(x._1, x._2))));
     statusCode = 200;
     contentType = "text/html; charset=utf-8";
   }
