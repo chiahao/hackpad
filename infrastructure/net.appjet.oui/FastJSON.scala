@@ -43,7 +43,7 @@ object FastJSONStringify {
     return stringer.toString();
   }
 
-  private def stringerize(s: JSONStringer, v: Object) = {
+  private def stringerize(s: JSONStringer, v: Object): Unit = {
     if (v == Context.getUndefinedValue) {
       return;
     }

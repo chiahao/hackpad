@@ -356,7 +356,7 @@ case class ExecutionContext(
 
 object CometSupport {
   trait CometHandler {
-    def handleCometRequest(req: HttpServletRequest, res: HttpServletResponse);
+    def handleCometRequest(req: HttpServletRequest, res: HttpServletResponse): Unit;
   }
   var cometHandler: CometHandler = null;
 }

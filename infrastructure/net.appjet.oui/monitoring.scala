@@ -18,7 +18,7 @@ package net.appjet.oui;
 
 object monitoring {
 
-  def startMonitoringServer() {
+  def startMonitoringServer() = {
     // remote JMX monitoring
     // see: http://java.sun.com/javase/6/docs/technotes/guides/management/agent.html
 
@@ -55,7 +55,7 @@ object monitoring {
     //env.put(javax.management.remote.rmi.RMIConnectorServer.RMI_SERVER_SOCKET_FACTORY_ATTRIBUTE, ssf);
     val PASSWORD_FILE_PATH = "data/jconsole-password.properties";
     val ACCESS_FILE_PATH = "data/jconsole-access.properties";
-    def writeStringToFile(str: String, path: String) {
+    def writeStringToFile(str: String, path: String) = {
       val out = new java.io.PrintStream(new java.io.BufferedOutputStream(
 	new java.io.FileOutputStream(path)));
       out.println(str);
@@ -76,15 +76,13 @@ object monitoring {
     try {
       val cs = JMXConnectorServerFactory.newJMXConnectorServer(url, env, mbs);
       cs.start();
-      System.err.println("Monitor server listening on "+listenHost+":{"+REGISTRY_PORT+
-	","+SECONDARY_PORT+"}");
+      System.err.println("Monitor server listening on "+listenHost+":{"+REGISTRY_PORT+ ","+SECONDARY_PORT+"}");
     }
     catch {
       case e => {
-	System.err.println("!!Could not start monitor server on "+listenHost+":{"+REGISTRY_PORT+
-	  ","+SECONDARY_PORT+"} due to:");
+	System.err.println("!!Could not start monitor server on "+listenHost+":{"+REGISTRY_PORT+ ","+SECONDARY_PORT+"} due to:");
 	e.printStackTrace(System.err);
-      }
+	}
     }
   }
   
@@ -113,12 +111,12 @@ class JSExecutor extends JSExecutorMXBean {
 	val result = cx.evaluateString(global, code, "<script>", 1, null);
 	out.println(Context.toString(result));
 	null;
-      } });
+	} });
     }
     catch {
       case e => {
 	e.printStackTrace(out);
-      }
+	}
     }
     return new String(outStream.toByteArray, "UTF-8");
   }

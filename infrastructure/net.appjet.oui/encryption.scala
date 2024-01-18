@@ -102,9 +102,9 @@ object Encryptomatic {
     var i = BigInt(0);
     val Pair(isNegative, b) = 
       if (src.startsWith("-"))
-	(true, src.substring(1))
+      (true, src.substring(1))
       else
-	(false, src);
+     (false, src);
     for (c <- b) {
       i = i * chars.length + chars.indexOf(c);
     }
@@ -132,7 +132,7 @@ object Encryptomatic {
     (pubKey.getEncoded, privKey.getEncoded)
   }
 
-  def writeKeyPair(keyPair: KeyPair, publicKey: String, privateKey: String) {
+  def writeKeyPair(keyPair: KeyPair, publicKey: String, privateKey: String) = {
     val pubOutputStream = new PrintWriter(new FileOutputStream(publicKey));
     val privOutputStream = new PrintWriter(new FileOutputStream(privateKey));
     val Pair(pubBytes, privBytes) = keyPairBytes(keyPair);
@@ -158,7 +158,7 @@ object Encryptomatic {
 
   def readKeyPair(keyType: String, publicKey: InputStream, privateKey: InputStream) = {
     new KeyPair(readPublicKey(keyType, publicKey),
-		readPrivateKey(keyType, privateKey));
+    readPrivateKey(keyType, privateKey));
   }  
 
   def sign(source: InputStream, key: PrivateKey): Array[Byte] = {
@@ -228,7 +228,7 @@ object Encryptomatic {
 }
 
 object Encryptor {
-  def main(args: Array[String]) {
+  def main(args: Array[String]) = {
     args(0) match {
       case "genkeys" => {
         println("generating keys...");

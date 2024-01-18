@@ -17,6 +17,7 @@
 package net.appjet.oui;
 
 import scala.collection.mutable.HashMap;
+import scala.reflect.ClassTag;
 
 import java.util.Enumeration;
 import java.util.zip.GZIPOutputStream;
@@ -29,7 +30,7 @@ object Util {
         "Cache-Control" -> "no-store, no-cache, must-revalidate, max-age=0, post-check=0, pre-check=0",
         "Pragma" -> "no-cache");
 
-  def enumerationToArray[T: ClassManifest](e: Enumeration[T]): Array[T] = {
+  def enumerationToArray[T: ClassTag](e: Enumeration[T]): Array[T] = {
     import collection.JavaConversions._
     e.toArray;
   }

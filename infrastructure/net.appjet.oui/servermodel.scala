@@ -34,7 +34,7 @@ object ScopeReuseManager {
   //   }
   // }
   val t = new java.util.TimerTask {
-    def run() {
+    def run() = {
       Thread.currentThread().setName("File Update Watcher");
       try {
         // val t1 = System.currentTimeMillis;
@@ -104,7 +104,7 @@ object ScopeReuseManager {
     val mainScope = BodyLock.subScope(globalScope);
     var reuseOk = true;
     var trace: Option[Array[StackTraceElement]] = None;
-    override def finalize() {
+    override def finalize() = {
       trace.foreach(t => eventlog(Map(
         "type" -> "error",
         "error" -> "unreleased runner",
@@ -170,7 +170,7 @@ object ScopeReuseManager {
   
   def getEmpty: Runner = getEmpty(r => {});
 
-  def freeRunner(r: Runner) {
+  def freeRunner(r: Runner) = {
     r.trace = None;
     if (r.reuseOk && r.created > lastReset.get()) {
       freeRunners.offer(r);
@@ -190,7 +190,7 @@ object ScopeReuseManager {
   }
 
   lazy val resetExecutable = (new FixedDiskLibrary(new SpecialJarOrNotFile(config.ajstdlibHome, "onreset.js"))).executable;
-  def runOnReset() {
+  def runOnReset() = {
     execution.runOutOfBand(resetExecutable, "Reset", None, { error => 
       error match {
         case e: JSCompileException => { }

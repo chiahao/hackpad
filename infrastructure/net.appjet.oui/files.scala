@@ -24,8 +24,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.WeakHashMap;
 
 import scala.collection.mutable.Subscriber;
-import scala.collection.script.{Message, Reset=>SReset};
-import scala.collection.JavaConversions._;
+import scala.collection.mutable.{Subscriber, WeakHashMap};
+import scala.collection.generic.Reset;
+import scala.jdk.CollectionConverters._;
 
 trait WeakPublisher[A, This <: WeakPublisher[A, This]] { self: This => 
   val subscribers = new WeakHashMap[Subscriber[A, This], Unit];

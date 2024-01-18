@@ -28,13 +28,13 @@ class Synchronizer {
     val impl = new ReentrantLock;
   }
 
-  def acquire(key: Object) {
+  def acquire(key: Object) = {
     val lock = monitor.synchronized {
       var lck = lockMap.get(key);
       if (lck == null) {
 	lck = new Lock;
 	lockMap.put(key, lck);
-      }
+	}
       lck.users += 1;
       lck;
     }
@@ -53,13 +53,13 @@ class Synchronizer {
     }
   }
   
-  def release(key: Object) {
+  def release(key: Object) = {
     val lock = monitor.synchronized {
       var lck = lockMap.get(key);
       lck.users -= 1;
       if (lck.users == 0) {
 	lockMap.remove(key);
-      }
+	}
       lck;
     }
     lock.impl.unlock();

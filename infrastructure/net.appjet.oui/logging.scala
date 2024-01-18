@@ -30,7 +30,7 @@ import net.sf.json.{JSONObject, JSONArray};
 import org.mozilla.javascript.{Scriptable, Context};
 
 import scala.collection.JavaConversions;
-import scala.collection.JavaConversions._;
+import scala.jdk.CollectionConverters._
 
 trait LoggablePropertyBag {
   def date: Date;
@@ -492,7 +492,7 @@ class FilterWrangler(
     }    
   }
   var data: (Date, Any) => Unit = null;
-  def setData(data0: (Date, Any) => Unit) {
+  def setData(data0: (Date, Any) => Unit) = {
     data = data0;
   }
 }

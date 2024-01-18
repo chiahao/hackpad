@@ -61,62 +61,48 @@ object config {
   @ConfigParam("Activate \"profiling\" mode.")
   def profile = boolOrElse("profile", false);
 
-  @ConfigParam(value = "Directory to use for storing appjet support files, logs, etc.  This directory will be created if it does not exist and must be writeable by the user who runs appjet.jar.  Defaults to current working directory.",
-	             argName = "directory")
+  @ConfigParam(value = "Directory to use for storing appjet support files, logs, etc.  This directory will be created if it does not exist and must be writeable by the user who runs appjet.jar.  Defaults to current working directory.", argName = "directory")
   def appjetHome = stringOrElse("appjetHome", "appjet");
 
   @ConfigParam("Directory to use for storing built-in database (Apache Derby) files. Will be created if it doesn't exist. Defaults to [appjetHome]/db")
   def derbyHome = stringOrElse("derbyHome", "[appjetHome]/derbydb");
 
-  @ConfigParam(value = "Directory to use for storing appserver logs. Defaults to [appjetHome]/log/appserver",
-               argName = "directory")
+  @ConfigParam(value = "Directory to use for storing appserver logs. Defaults to [appjetHome]/log/appserver", argName = "directory")
   def logDir = stringOrElse("logDir", "[appjetHome]/log/appserver");
 
-  @ConfigParam(value = "Optional alternative directory to load built-in libraries from.  Used by AppJet platform hackers to develop and debug built-in libraries.  Default: use built-in libraries.",
-	             argName = "directory")
+  @ConfigParam(value = "Optional alternative directory to load built-in libraries from.  Used by AppJet platform hackers to develop and debug built-in libraries.  Default: use built-in libraries.", argName = "directory")
   def ajstdlibHome = stringOrElse("ajstdlibHome", null);
 
-  @ConfigParam(value = "Optional directory to specify as the \"app home\".",
-               argName = "directory")
+  @ConfigParam(value = "Optional directory to specify as the \"app home\".", argName = "directory")
   def appHome = stringOrElse("appHome", "");
 
   @ConfigParam("Whether to generate https URLs even if running locally behind HTTP (useful for Apache handling HTTPS)")
   def useHttpsUrls = boolOrElse("useHttpsUrls", false);
 
-  @ConfigParam(value = "Search path for modules imported via \"import\". Defaults to current working directory.", 
-               argName = "dir1:dir2:...")
+  @ConfigParam(value = "Search path for modules imported via \"import\". Defaults to current working directory.", argName = "dir1:dir2:...")
   def modulePath = stringOrElse("modulePath", null);
-  def moduleRoots =
-    Array.concat(Array("."), if (modulePath != null) modulePath.split(":") else Array[String](), Array(ajstdlibHome));
+  def moduleRoots = Array.concat(Array("."), if (modulePath != null) modulePath.split(":") else Array[String](), Array(ajstdlibHome));
 
-  @ConfigParam(value = "Where to read the static files from on the local filesystem. Don't specify this to read static files from the classpath/JAR.",
-               argName = "directory")
+  @ConfigParam(value = "Where to read the static files from on the local filesystem. Don't specify this to read static files from the classpath/JAR.", argName = "directory")
   def useVirtualFileRoot = stringOrElse("useVirtualFileRoot", null);
 
-  @ConfigParam(value = "Directory to use for storing the temporary sessions file on shutdown. Will be created if it does not exist.",
-               argName = "directory")
+  @ConfigParam(value = "Directory to use for storing the temporary sessions file on shutdown. Will be created if it does not exist.", argName = "directory")
   def sessionStoreDir = stringOrElse("sessionStoreDir", "[appjetHome]/sessions");
 
   // performance tuning
-  @ConfigParam(value = "Create this many runners before opening up the server.",
-               argName = "count")
+  @ConfigParam(value = "Create this many runners before opening up the server.", argName = "count")
   def preloadRunners = intOrElse("preloadRunners", 0);
 
-  @ConfigParam(value = "Have this many JDBC connections available in the pool.",
-               argName = "count")
+  @ConfigParam(value = "Have this many JDBC connections available in the pool.", argName = "count")
   def jdbcPoolSize = intOrElse("jdbcPoolSize", 10);
 
-  @ConfigParam(value = "Max count of worker threads.",
-               argName = "num")
+  @ConfigParam(value = "Max count of worker threads.", argName = "num")
   def maxThreads = intOrElse("maxThreads", 250);
-  @ConfigParam(value = "Max count of worker threads at boot.",
-               argName = "num")
+  @ConfigParam(value = "Max count of worker threads at boot.", argName = "num")
   def maxStartupThreads = intOrElse("maxThreadsStartup", 4);
-  @ConfigParam(value = "Minimal delay between incrementing maxThreads.",
-               argName = "num")
+  @ConfigParam(value = "Minimal delay between incrementing maxThreads.", argName = "num")
   def maxThreadsIncrementDelay = intOrElse("maxThreadsIncrementDelay", 2000);
-  @ConfigParam(value = "Minimal delay between incrementing maxThreads.",
-               argName = "num")
+  @ConfigParam(value = "Minimal delay between incrementing maxThreads.", argName = "num")
   def maxThreadsIncrementValue = intOrElse("maxThreadsIncrementValue", 1);
 
   // specifying ports and such
@@ -171,8 +157,7 @@ object config {
   def listenSarsPort = extractHostAndPort(listenSars)._2;
 
   // SARS
-  @ConfigParam(value = "SARS auth key. Default: \"appjet\".",
-	             argName = "authkey")
+  @ConfigParam(value = "SARS auth key. Default: \"appjet\".", argName = "authkey")
   def sarsAuthKey = stringOrElse("sarsAuthKey", "appjet");
 
   // SSL
@@ -188,8 +173,7 @@ object config {
   def sslStorePassword = stringOrElse("sslStorePassword", "appjet");
 
   // email
-  @ConfigParam(value = "host:port of mail server to use for sending email. Default: localhost:25.",
-	             argName = "host:port")
+  @ConfigParam(value = "host:port of mail server to use for sending email. Default: localhost:25.", argName = "host:port")
   def smtpServer = stringOrElse("smtpServer", "localhost:25");
   def smtpServerHost = extractHostAndPort(smtpServer)._1;
   def smtpServerPort = extractHostAndPort(smtpServer)._2;
@@ -201,8 +185,7 @@ object config {
   def smtpPass = stringOrElse("smtpPass", "");
 
   // comet
-  @ConfigParam(value = "prefix for all comet requests. Required to use Comet system.",
-	             argName = "path")
+  @ConfigParam(value = "prefix for all comet requests. Required to use Comet system.", argName = "path")
   def transportPrefix = stringOrElse("transportPrefix", null);
   @ConfigParam("Use a subdomain for all comet requests.")
   def transportUseWildcardSubdomains = boolOrElse("transportUseWildcardSubdomains", false);
@@ -222,7 +205,7 @@ object config {
   override def toString() =
     (allProperties.map(m => m.getName()+" -> "+m.invoke(this)) ++
      values.keys.toList.filter(! allPropertiesMap.contains(_)).map(k => k+" -> "+values(k))).mkString("[Config ", ", ", "]");
-  def print {
+  def print = {
     for (m <- allProperties) {
       println(m.getName() + " -> " + m.invoke(this));
     }
