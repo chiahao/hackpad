@@ -24,14 +24,20 @@
 ## Change the following lines to fit your development environment.
 
 # These lines assume you installed Scala via Homebrew.
-export SCALA_HOME="/home/linuxbrew/.linuxbrew/Cellar/scala/3.3.1"
+# Linux
+#export SCALA_HOME="/home/linuxbrew/.linuxbrew/Cellar/scala/3.3.1"
 #export SCALA_HOME="/home/linuxbrew/.linuxbrew/opt/scala@2.12"
+# Mac
+export SCALA_HOME="/opt/homebrew/Cellar/scala/3.3.1"
 export SCALA="$SCALA_HOME/bin/scala"
 export SCALA_LIBRARY_JAR="$SCALA_HOME/libexec/lib/scala-library-2.13.10.jar"
 #export SCALA_LIBRARY_JAR="$SCALA_HOME/libexec/lib/scala-library.jar"
 
-export JAVA_HOME="/lib/jvm/jdk1.8.0_202"
-export JAVA="/lib/jvm/jdk1.8.0_202/bin/java"
+#export JAVA_HOME="/lib/jvm/jdk1.8.0_202"
+#export JAVA="/lib/jvm/jdk1.8.0_202/bin/java"
+# Mac
+export JAVA_HOME="/Library/Java/JavaVirtualMachines/jdk1.8.0_291.jdk/Contents/Home"
+export JAVA="/Library/Java/JavaVirtualMachines/jdk1.8.0_291.jdk/Contents/Home/bin/java"
 
 ## The following lines should not need changing.
 

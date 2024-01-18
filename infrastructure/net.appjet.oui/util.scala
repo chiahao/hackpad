@@ -31,7 +31,6 @@ object Util {
         "Pragma" -> "no-cache");
 
   def enumerationToArray[T: ClassTag](e: Enumeration[T]): Array[T] = {
-    import collection.JavaConversions._
     e.toArray;
   }
   

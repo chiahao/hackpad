@@ -91,7 +91,7 @@ object Encryptomatic {
       i = BigInt(0)-i;
     val sb = new StringBuffer();
     while (i > BigInt(chars.length-1)) {
-      val Pair(div, mod) = i /% BigInt(chars.length);
+      val (div, mod) = i /% BigInt(chars.length);
       sb.append(chars(mod.intValue));
       i = div;
     }
@@ -100,7 +100,7 @@ object Encryptomatic {
   }
   def asciiToBytes(src: String) = {
     var i = BigInt(0);
-    val Pair(isNegative, b) = 
+    val (isNegative: Boolean, b: String) = 
       if (src.startsWith("-"))
       (true, src.substring(1))
       else
@@ -135,7 +135,7 @@ object Encryptomatic {
   def writeKeyPair(keyPair: KeyPair, publicKey: String, privateKey: String) = {
     val pubOutputStream = new PrintWriter(new FileOutputStream(publicKey));
     val privOutputStream = new PrintWriter(new FileOutputStream(privateKey));
-    val Pair(pubBytes, privBytes) = keyPairBytes(keyPair);
+    val (pubBytes, privBytes) = keyPairBytes(keyPair);
     pubOutputStream.print(bytesToAscii(pubBytes));
     privOutputStream.print(bytesToAscii(privBytes));
     List(pubOutputStream, privOutputStream).foreach(x => {x.flush(); x.close()});

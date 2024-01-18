@@ -155,10 +155,10 @@ object GenericLoggerUtils {
   val registeredWranglers = 
     new ConcurrentHashMap[String, scala.collection.mutable.Set[WeakReference[LogWrangler]]];
   def registerWrangler(name: String, wrangler: LogWrangler) = {
-    wranglers(name) = wranglers(name) + wrangler.ref;
+    registeredWranglers.put(name, scala.collection.mutable.Set(new WeakReference(wrangler)));
   }
   def clearWrangler(name: String, wrangler: LogWrangler) = {
-    wranglers(name).removeIf(w => w.get == wrangler.ref);
+    registeredWranglers.remove(name);
   }
   def wranglers(name: String) = {
     if (! registeredWranglers.containsKey(name)) {
@@ -175,10 +175,10 @@ object GenericLoggerUtils {
     }
   }
   def tellWranglers(name: String, lpb: LoggablePropertyBag) = {
-    for (w <- wranglers(name).asScala) {
+    for (w <- wranglers(name)) {
       w.get.foreach(_.tell(lpb));
       if (w.get.isEmpty) {
-        wranglers(name).remove(w);
+        wranglers(name).remove(name);
       }
     }
   }
