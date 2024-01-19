@@ -23,6 +23,8 @@ import java.util.Enumeration;
 import java.util.zip.GZIPOutputStream;
 import java.io.ByteArrayOutputStream;
 
+import scala.jdk.javaapi.CollectionConverters;
+
 object Util {
   def noCacheHeaders =
     Map("Expires" -> "Sat, 5 Feb 1983 07:07:07 GMT",
@@ -31,7 +33,7 @@ object Util {
         "Pragma" -> "no-cache");
 
   def enumerationToArray[T: ClassTag](e: Enumeration[T]): Array[T] = {
-    e.toArray;
+    CollectionConverters.asScala(e).toArray;
   }
   
   def stringToHTML(str: String): String = {

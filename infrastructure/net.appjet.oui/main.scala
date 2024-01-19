@@ -25,7 +25,8 @@ import java.text.SimpleDateFormat;
 
 import scala.collection.mutable.{HashMap, HashSet};
 import java.util.concurrent.ConcurrentHashMap;
-import scala.collection.JavaConverters;
+import scala.jdk.CollectionConverters._;
+import scala.collection.concurrent.TrieMap;
 
 import org.mortbay.thread.QueuedThreadPool;
 import org.mortbay.jetty.servlet.{Context, HashSessionIdManager, FilterHolder, ServletHolder};
@@ -105,7 +106,7 @@ object main {
   }
 
   def extractOptions(props: Properties) = {
-    for (k <- for (o <- JavaConverters.enumerationAsScalaIterator(props.propertyNames())) yield o.asInstanceOf[String]) {
+    for (k <- for (o <- props.propertyNames().asScala) yield o.asInstanceOf[String]) {
       config.values(k) = props.getProperty(k);
     }
   }
@@ -178,7 +179,7 @@ object main {
 
     // this needs a better place.
     if (config.devMode)
-      BodyLock.map = Some(new ConcurrentHashMap[String, String]());
+      BodyLock.map = Some(new TrieMap[String, String]());
 
     server = new Server();
     if (config.maxStartupThreads > 0)
@@ -383,7 +384,7 @@ object main {
       }
       case e: org.mortbay.util.MultiException => {
         println("SERVER ERROR: Couldn't start server; multiple errors.");
-        for (i <- JavaConverters.asScalaIterator(e.getThrowables.iterator())) {
+        for (i <- e.getThrowables.iterator().asScala) {
           i match {
             case se: java.net.SocketException => {
               socketError(c, se);
