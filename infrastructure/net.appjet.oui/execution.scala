@@ -24,7 +24,7 @@ import javax.servlet.http.{HttpServletRequest, HttpServletResponse, HttpServlet}
 
 import scala.collection.mutable.{ListBuffer, LinkedHashSet, HashMap, ArrayBuffer};
 import scala.collection.immutable.Map;
-import scala.collection.JavaConversions;
+import scala.collection.JavaConverters;
 
 import org.mozilla.javascript.{Scriptable, Context, Function, ScriptableObject, JavaScriptException};
 import org.mortbay.jetty.RetryRequest;
@@ -100,7 +100,7 @@ class RequestWrapper(val req: HttpServletRequest) {
       }
       req.getAttribute("ajcache_parameters").asInstanceOf[Map[String, Array[String]]];
     } else {
-      JavaConversions.mapAsScalaMap(req.getParameterMap().asInstanceOf[java.util.Map[String, Array[String]]]);
+      JavaConverters.mapAsScalaMap(req.getParameterMap().asInstanceOf[java.util.Map[String, Array[String]]]);
     }
   }
 
@@ -111,7 +111,7 @@ class RequestWrapper(val req: HttpServletRequest) {
     false);
   def headers(globalScope: Scriptable) = new ScriptableFromMapOfStringArrays(
     globalScope,
-    JavaConversions.enumerationAsScalaIterator(req.getHeaderNames().asInstanceOf[Enumeration[String]])
+    JavaConverters.enumerationAsScalaIterator(req.getHeaderNames().asInstanceOf[Enumeration[String]])
       .map(headerCapitalize).toList,
     h => h match {
       case "Host" => Some(Array(host));
@@ -174,11 +174,15 @@ class ResponseWrapper(val res: HttpServletResponse) {
   private var statusCode = 200;
   private var contentType = "text/html;";
   private var redirect: String = null;
-  private lazy val headers = new LinkedHashSet[(String, String, HttpServletResponse => Unit)] {
-    def removeAll(k: String) = {
-      this.foreach(x => if (x._1 == k) remove(x));
+  object LinkedHashSetExtension {
+    implicit class LinkedHashSetExtensions(headers: LinkedHashSet[(String, String, HttpServletResponse => Unit)]) {
+      def removeAll(k: String): Unit = {
+        headers.foreach(x => if (x._1 == k) headers.remove(x))
+      }
     }
   }
+  import LinkedHashSetExtension._;
+  private lazy val headers = new LinkedHashSet[(String, String, HttpServletResponse => Unit)];
 
   private[oui] def overwriteOutputWithError(code: Int, errorStr: String) = {
     statusCode = code;
@@ -232,7 +236,7 @@ class ResponseWrapper(val res: HttpServletResponse) {
     statusCode = sc;
   }
   def getStatusCode() = statusCode;
-  def redirect(loc: String) = {
+  def redirect(loc: String): Unit = {
     statusCode = 302;
     redirect = loc;
     stop();
@@ -469,7 +473,7 @@ object execution {
     }
   }
 
-  def execute(req: HttpServletRequest, res: HttpServletResponse) = {
+  def execute(req: HttpServletRequest, res: HttpServletResponse): Unit = {
     val runner = try {
       ScopeReuseManager.getRunner;
     } catch {
@@ -569,11 +573,11 @@ object execution {
       if (currentContext != null) {
         currentContext.request;
       } else {
-        val fakeHeaders = scala.collection.JavaConversions.mapAsScalaMap(
+        val fakeHeaders = JavaConverters.mapAsScalaMap(
           new java.util.HashMap[String, String]);
         fakeHeaders("Host") = "unknown.local";
         new RequestWrapper(HttpServletRequestFactory.createRequest(
-            "/", JavaConversions.mapAsJavaMap(fakeHeaders), "GET", null)) {
+            "/", JavaConverters.mapAsJavaMap(fakeHeaders), "GET", null)) {
           override val isFake = true;
         }
       }
@@ -617,11 +621,11 @@ object execution {
         if (currentContext != null) {
           currentContext.request;
         } else {
-          val fakeHeaders = scala.collection.JavaConversions.mapAsScalaMap(
+          val fakeHeaders = JavaConverters.mapAsScalaMap(
             new java.util.HashMap[String, String]);
           fakeHeaders("Host") = "unknown.local";
           new RequestWrapper(HttpServletRequestFactory.createRequest(
-              "/", JavaConversions.mutableMapAsJavaMap(fakeHeaders), "GET", null)) {
+              "/", JavaConverters.mutableMapAsJavaMap(fakeHeaders), "GET", null)) {
             override val isFake = true;
           }
         }
