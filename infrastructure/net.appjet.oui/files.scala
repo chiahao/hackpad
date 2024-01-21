@@ -21,7 +21,6 @@ import net.appjet.common.util.BetterFile;
 
 import java.io.{File, FileNotFoundException, FileInputStream, IOException, ByteArrayInputStream};
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.WeakHashMap;
 
 import scala.collection.mutable.Subscriber;
 import scala.collection.mutable.{Subscriber, WeakHashMap};

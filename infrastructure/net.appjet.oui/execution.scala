@@ -269,12 +269,12 @@ class ResponseWrapper(val res: HttpServletResponse) {
       headers.foreach(_._3(res));
       if (gzipOutput) res.setHeader("Content-Encoding", "gzip");
       if (outputStrings.length > 0) {
-        var bytes: Seq[Array[Byte]] = outputStrings.map(_.getBytes(res.getCharacterEncoding()));
+        var bytes: Seq[Array[Byte]] = outputStrings.map(_.getBytes(res.getCharacterEncoding())).toSeq;
         if (gzipOutput) bytes = List(Util.gzip(Array.concat(bytes:_*)));
         res.setContentLength((bytes :\ 0) {_.length + _});
         bytes.foreach(res.getOutputStream.write(_));
       } else if (outputBytes.length > 0) {
-        var bytes: Seq[Array[Byte]] = outputBytes;
+        var bytes: Seq[Array[Byte]] = outputBytes.toSeq;
         if (gzipOutput) bytes = List(Util.gzip(Array.concat(bytes:_*)));
         res.setContentLength((bytes :\ 0) {_.length + _});
         bytes.foreach(res.getOutputStream.write(_));
@@ -541,7 +541,7 @@ object execution {
                 case jse: JavaScriptException => { (jse.getValue() match {
                   case ne: org.mozilla.javascript.IdScriptableObject => ne.get("message", ne)
                   case e => e.getClass.getName
-                }) + "<br>\n" + errorToHTML(jse); }
+                }).toString + "<br>\n" + errorToHTML(jse); }
                 case _ => errorToHTML(e2);
               }
               errorHandler(
@@ -648,7 +648,7 @@ object execution {
                         Some(executable));
       if (ec.response != null && ec.response.getStatusCode() != 200) {
         println(name+" execution failed with non-200 response: "+ec.response.getStatusCode());
-        onFailure((ec.response.getStatusCode, ec.response.getOutput()));
+        onFailure((ec.response.getStatusCode(), ec.response.getOutput()));
       }
       ec;
     } catch {
